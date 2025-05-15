@@ -58,19 +58,44 @@ A Python tool for splitting large texts into coherent, meaningful semantic chunk
 Input:  
 [example/input.txt](example/input.txt)
 
+Visual example of the input text:
+```
+This is the introduction to the text. It provides an overview of the main topics that will be discussed in detail later on.
+```
+
 Output:  
 [example/output.json](example/output.json)
+
+Visual example of the output JSON:
+```json
+[
+    {
+        "title": "Introduction",
+        "content": "This is the introduction to the text.",
+        "start": 0,
+        "end": 37,
+        "length": 37
+    },
+    {
+        "title": "Main Topic",
+        "content": "It provides an overview of the main topics that will be discussed in detail later on.",
+        "start": 38,
+        "end": 156,
+        "length": 85
+    }
+]
+```
 
 ## Configuration
 
 You can adjust chunk size, model, and other settings in the `.env` file:
 
 ```
-OPENAI_API_KEY="your_openai_api_key_here"
-LOG_LEVEL="INFO"
-CHUNK_SIZE="300"
-MODEL_ID="gpt-4.1-mini"
-MAX_RETRIES="5"
+OPENAI_API_KEY="your_openai_api_key_here" # Your OpenAI API key
+LOG_LEVEL="INFO" # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+CHUNK_SIZE="300" # Approximate size of each chunk in 'words'
+MODEL_ID="gpt-4.1-mini" # OpenAI model to use
+MAX_RETRIES="5" # Maximum number of retries for API calls for each chunk
 ```
 
 ## License
