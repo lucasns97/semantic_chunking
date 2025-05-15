@@ -12,7 +12,7 @@ A Python tool for splitting large texts into coherent, meaningful semantic chunk
 
 1. **Clone the repository**  
    ```sh
-   git clone https://github.com/yourusername/semantic-chunking-tool.git
+   git clone https://github.com/lucasns97/semantic_chunking.git
    cd semantic-chunking-tool
    ```
 
