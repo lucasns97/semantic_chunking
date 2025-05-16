@@ -7,6 +7,7 @@ from .config import Config, setup_logging
 from .openai_client import OpenAIClient
 from .parser import ResponseParser
 from .chunker import SemanticChunker
+from .processor import TextProcessor
 
 def main():
     parser = argparse.ArgumentParser(description="Semantic text chunking via OpenAI")
@@ -19,7 +20,8 @@ def main():
 
     client = OpenAIClient(config, logger)
     resp_parser = ResponseParser()
-    chunker = SemanticChunker(client, resp_parser, config, logger)
+    processor = TextProcessor()
+    chunker = SemanticChunker(client, resp_parser, processor, config, logger)
 
     logger.info(f"Reading from {args.input}")
     text = open(args.input, encoding='utf-8').read()

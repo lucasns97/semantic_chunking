@@ -5,6 +5,8 @@ import logging
 from typing import List, Dict, Any
 from .openai_client import OpenAIClient
 from .parser import ResponseParser
+from .processor import TextProcessor
+from .config import Config, log_progress
 
 class SemanticChunker:
     """
@@ -29,9 +31,10 @@ Text to split:
 \"\"\"
 """
 
-    def __init__(self, client: OpenAIClient, parser: ResponseParser, config, logger: logging.Logger):
+    def __init__(self, client: OpenAIClient, parser: ResponseParser, processor: TextProcessor, config: Config, logger: logging.Logger):
         self.client = client
         self.parser = parser
+        self.processor = processor
         self.size = config.chunk_size
         self.logger = logger
         self.max_retries = config.max_retries
@@ -66,6 +69,11 @@ Text to split:
                 - end (int): Ending index in the original text.
                 - length (int): Number of characters in the chunk.
         """
+        # Preprocess text: remove newlines and excessive whitespace
+        self.logger.info("Preprocessing text")
+        text = self.processor.clean_text(text)
+        
+        # Log the initial text length
         self.logger.info("Starting semantic chunking of text (%d chars)", len(text))
         offset = 0
         retries = 0
@@ -73,6 +81,10 @@ Text to split:
         chunks: List[Dict[str, Any]] = []
 
         while remaining:
+            # Log % of text processed
+            percent_done = (1 - len(remaining) / len(text)) * 100
+            log_progress(self.logger, percent_done)
+            
             # Check if max retries reached
             if retries >= self.max_retries:
                 self.logger.error(f"Max retries reached ({self.max_retries}); stopping chunking.")
@@ -91,7 +103,7 @@ Text to split:
             # Locate content within remaining text
             start_rel = remaining.find(content)
             if start_rel < 0:
-                self.logger.error(f"Chunk content not found in remaining text; trying again ({retries + 1}/{self.max_retries})")
+                self.logger.warning(f"Chunk content not found in remaining text; trying again ({retries + 1}/{self.max_retries})")
                 retries += 1
                 continue
             
